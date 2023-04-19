@@ -37,7 +37,7 @@ $Hostname = hostname
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('ServerActive=127.0.0.1', 'ServerActive=zabbix.systancia.com') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# Hostname=', 'Hostname=$Hostname') | Set-Content C:\zabbix\zabbix_agentd.conf
 
-# Pour que le serveur puisse automatiquement enregistrer les nouveaux hôtes, les données ci-dessus ne suffisent pas, nous avons donc besoin de spécifier le "HostMetaDataItem" pour que ça fonctii
+# Pour que le serveur puisse automatiquement enregistrer les nouveaux hôtes, les données ci-dessus ne suffisent pas, nous avons donc besoin de spécifier le "HostMetaDataItem" pour que ça fonctionne
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# HostMetadataItem=', 'HostMetadataItem=system.uname') | Set-Content C:\zabbix\zabbix_agentd.conf
 
 
@@ -46,8 +46,8 @@ $CurrentRandom = Get-Random -minimum 1 -maximum 99
 $FinalePSKId = "PSK $CurrentRandom"
 
 # Pour qu'il accepte le chiffrement psk, il faut modifier quelques paramètres
-(Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSConnect=psk', 'TLSConnect=psk') | Set-Content C:\zabbix\zabbix_agentd.conf
-(Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSAccept=psk', 'TLSAccept=psk') | Set-Content C:\zabbix\zabbix_agentd.conf
+(Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSConnect=unencrypted', 'TLSConnect=psk') | Set-Content C:\zabbix\zabbix_agentd.conf
+(Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSAccept=unencrypted', 'TLSAccept=psk') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSPSKIdentity=', "TLSPSKIdentity=$FinalePSKId") | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSPSKFile=', "TLSPSKFile=C:\zabbix\zabbix_agentd.psk") | Set-Content C:\zabbix\zabbix_agentd.conf
 
