@@ -5,18 +5,21 @@ Invoke-WebRequest -Uri "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.1/
 Expand-Archive $Target -DestinationPath $zabbixDir
 
 if ( Test-Path "C:\zabbix" ) {
+        
+        Set-Location $zabbixDir
 
-        C:\zabbix\zabbix_agentd.exe --config C:\zabbix\zabbix_agentd.conf --install 2>&1 | out-null
+        .\zabbix_agentd.exe --config .\zabbix_agentd.conf --install 2>&1 | out-null
         Start-Sleep -s 2
 
-        C:\zabbix\zabbix_agentd.exe --config C:\zabbix\zabbix_agentd.conf --start 2>&1 | out-null
+        .\zabbix_agentd.exe --config .\zabbix_agentd.conf --start 2>&1 | out-null
 
         #je coupe le service pour modifier la configuration
         Start-Sleep -s 2
-        C:\zabbix\zabbix_agentd.exe --config C:\zabbix\zabbix_agentd.conf --stop 2>&1 | out-null
+        .\zabbix_agentd.exe --config .\zabbix_agentd.conf --stop 2>&1 | out-null
 
         #Génère la clef PSK de l'host avec son nom machine.psk
-        $mypsk = C:\zabbix\openssl.exe rand -hex 32
+        Set-Location "C:\Program Files\OpenSSL-Win64\bin"
+        $mypsk = .\openssl.exe rand -hex 32
         Write-Output $mypsk > "C:\zabbix\zabbix_agentd.psk"
     } else {
     Write-Host "Fail Copy check sources"
@@ -52,6 +55,6 @@ $FinalePSKId = "PSK $CurrentRandom"
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# TLSPSKFile=', "TLSPSKFile=C:\zabbix\zabbix_agentd.psk") | Set-Content C:\zabbix\zabbix_agentd.conf
 
 # On s'assure que le service à bien été arrêté et on le démarre normalement
-C:\zabbix\zabbix_agentd.exe --config C:\zabbix\zabbix_agentd.conf --stop 2>&1 | out-null
+.\zabbix_agentd.exe --config .\zabbix_agentd.conf --stop 2>&1 | out-null
 Start-Sleep -s 2
-C:\zabbix\zabbix_agentd.exe --config C:\zabbix\zabbix_agentd.conf --start 2>&1 | out-null
+.\zabbix_agentd.exe --config .\zabbix_agentd.conf --start 2>&1 | out-null
