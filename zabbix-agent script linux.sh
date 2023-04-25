@@ -17,8 +17,7 @@ sed -i 's/# Hostname=/Hostname=$hostname/g' $agent_conf
 # si on veut que la machine s'identifie par son "Hostname", on a besoin de la ligne suivante :
 # sed -i 's/# HostnameItem=system.hostname/HostnameItem=system.hostname/g' $agent_conf
 
-# Pour que le serveur puisse automatiquement enregistrer les nouveaux hôtes, les données ci-dessus ne suffisent pas, 
-\nous avons donc besoin de spécifier le "HostMetaDataItem" pour que ça fonctionne
+# Pour que le serveur puisse automatiquement enregistrer les nouveaux hôtes, les données ci-dessus ne suffisent pas, nous avons donc besoin de spécifier le "HostMetaDataItem" pour que ça fonctionne
 sed -i 's/# HostMetaData=/HostMetaData=linux/g' $agent_conf
 
 psk = $(openssl rand -hex 32);
