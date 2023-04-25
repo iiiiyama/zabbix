@@ -1,4 +1,4 @@
-﻿$Target = "C:"
+$Target = "C:"
 $zabbixDir = "C:\zabbix"
 
 Invoke-WebRequest -Uri "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.1/zabbix_agent-6.4.1-windows-amd64-openssl.zip" -OutFile $Target
@@ -17,7 +17,7 @@ if ( Test-Path "C:\zabbix" ) {
 
         #Génère la clef PSK de l'host avec son nom machine.psk
         $mypsk = C:\zabbix\openssl.exe rand -hex 32
-        echo $mypsk > "C:\zabbix\zabbix_agentd.psk"
+        Write-Output $mypsk > "C:\zabbix\zabbix_agentd.psk"
     } else {
     Write-Host "Fail Copy check sources"
     Exit
@@ -35,7 +35,7 @@ $Hostname = hostname
 # (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# HostnameItem=system.hostname', 'HostnameItem=system.hostname') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('Server=127.0.0.1', 'Server=zabbix.systancia.com') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('ServerActive=127.0.0.1', 'ServerActive=zabbix.systancia.com') | Set-Content C:\zabbix\zabbix_agentd.conf
-(Get-Content C:\zabbix\zabbix_agentd.conf).replace('# Hostname=', 'Hostname=$Hostname') | Set-Content C:\zabbix\zabbix_agentd.conf
+(Get-Content C:\zabbix\zabbix_agentd.conf).replace('# Hostname=', "Hostname=$Hostname") | Set-Content C:\zabbix\zabbix_agentd.conf
 
 # Pour que le serveur puisse automatiquement enregistrer les nouveaux hôtes, les données ci-dessus ne suffisent pas, nous avons donc besoin de spécifier le "HostMetaDataItem" pour que ça fonctionne
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# HostMetadataItem=', 'HostMetadataItem=system.uname') | Set-Content C:\zabbix\zabbix_agentd.conf
