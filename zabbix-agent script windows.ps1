@@ -17,7 +17,7 @@ if ( Test-Path "C:\zabbix" ) {
         Start-Sleep -s 2
         .\zabbix_agentd.exe --config .\zabbix_agentd.conf --stop 2>&1 | out-null
 
-        #Génère la clef PSK de l'host avec son nom machine.psk
+        #Génère la clef PSK de l'host et le place dans un fichier psk
         Set-Location "C:\Program Files\OpenSSL-Win64\bin"
         $mypsk = .\openssl.exe rand -hex 32
         Write-Output $mypsk > "C:\zabbix\zabbix_agentd.psk"
