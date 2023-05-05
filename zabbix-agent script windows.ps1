@@ -5,7 +5,7 @@ $zabbixDir = "C:\zabbix"
 Invoke-WebRequest -Uri "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.1/zabbix_agent-6.4.1-windows-amd64-openssl.zip" -OutFile $Target
 Expand-Archive $Target -DestinationPath $zabbixDir
 
-#téléchérge openssl pour Windows
+#télécharge openssl pour Windows
 Invoke-WebRequest -Uri "https://download.firedaemon.com/FireDaemon-OpenSSL/openssl-3.1.0.zip" -OutFile "openssl.zip"
 Expand-Archive -Path "openssl.zip" -DestinationPath "C:\Users"
 
