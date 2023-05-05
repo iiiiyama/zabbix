@@ -1,8 +1,13 @@
 $Target = "C:"
 $zabbixDir = "C:\zabbix"
 
+# Télécharge l'archive de l'agent
 Invoke-WebRequest -Uri "https://cdn.zabbix.com/zabbix/binaries/stable/6.4/6.4.1/zabbix_agent-6.4.1-windows-amd64-openssl.zip" -OutFile $Target
 Expand-Archive $Target -DestinationPath $zabbixDir
+
+#téléchérge openssl pour Windows
+Invoke-WebRequest -Uri "https://download.firedaemon.com/FireDaemon-OpenSSL/openssl-3.1.0.zip" -OutFile "openssl.zip"
+Expand-Archive -Path "openssl.zip" -DestinationPath "C:\Users"
 
 if ( Test-Path "C:\zabbix" ) {
         
@@ -17,10 +22,11 @@ if ( Test-Path "C:\zabbix" ) {
         Start-Sleep -s 2
         .\zabbix_agentd.exe --config .\zabbix_agentd.conf --stop 2>&1 | out-null
 
-        #Génère la clef PSK de l'host et le place dans un fichier psk
-        Set-Location "C:\Program Files\OpenSSL-Win64\bin"
+        #Génère la clef PSK de l'host avec son nom machine.psk
+        Set-Location "C:\Users\openssl-3\x64\bin"
         $mypsk = .\openssl.exe rand -hex 32
         Write-Output $mypsk > "C:\zabbix\zabbix_agentd.psk"
+
     } else {
     Write-Host "Fail Copy check sources"
     Exit
@@ -33,12 +39,14 @@ if (!(Test-Path -Path $zabbixDir)) {
 
 $Hostname = hostname
 
-# Pour identifier le serveur, il faut modifier quelques paramètres (à noter que "ServerActive" et "Hostname" n'importe pas sur le bon fonctionnement du monitoring de la machine, ils là que pour donner des indications)
+# Pour identifier le serveur, il faut modifier quelques paramètres (à noter que "ServerActive" et "Hostname" n'importe pas sur le bon fonctionnement du monitoring de la machine, il ne l'a que pour donner des indications)
 # Autre remarque; si on veut que la machine s'identifie par son "Hostname", on a besoin de la ligne suivante :
 # (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# HostnameItem=system.hostname', 'HostnameItem=system.hostname') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('Server=127.0.0.1', 'Server=zabbix.systancia.com') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('ServerActive=127.0.0.1', 'ServerActive=zabbix.systancia.com') | Set-Content C:\zabbix\zabbix_agentd.conf
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# Hostname=', "Hostname=$Hostname") | Set-Content C:\zabbix\zabbix_agentd.conf
+# la ligne ci-dessous permet d'effectuer des commandes à distance sur l'agent
+(Get-Content C:\zabbix\zabbix_agentd.conf | foreach {$_ -match "EnableRemoteCommands"}).replace('# Mandatory: no', 'EnableRemoteCommands=1') | Set-Content C:\zabbix\zabbix_agentd.conf
 
 # Pour que le serveur puisse automatiquement enregistrer les nouveaux hôtes, les données ci-dessus ne suffisent pas, nous avons donc besoin de spécifier le "HostMetaDataItem" pour que ça fonctionne
 (Get-Content C:\zabbix\zabbix_agentd.conf).replace('# HostMetadataItem=', 'HostMetadataItem=system.uname') | Set-Content C:\zabbix\zabbix_agentd.conf
