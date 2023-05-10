@@ -13,6 +13,7 @@ hostname = $(hostname);
 sed -i 's/Server=127.0.0.1/Server=zabbix.systancia.com/g' $agent_conf
 sed -i 's/ServerActive=127.0.0.1/ServerActive=zabbix.systancia.com/g' $agent_conf
 sed -i 's/# Hostname=/Hostname=$hostname/g' $agent_conf
+sed -i 's/# Mandatory: no/EnableRemoteCommands=1/g' $agent_conf
 
 # si on veut que la machine s'identifie par son "Hostname", on a besoin de la ligne suivante :
 # sed -i 's/# HostnameItem=system.hostname/HostnameItem=system.hostname/g' $agent_conf
